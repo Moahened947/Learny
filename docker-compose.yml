@@ -3,10 +3,7 @@ version: '3.8'
 services:
   web:
     build: .
-    command: >
-      bash -c "python manage.py migrate --noinput &&
-               python manage.py collectstatic --noinput &&
-               gunicorn --bind 0.0.0.0:8000 Learny.wsgi:application"
+    command: python manage.py runserver 0.0.0.0:8000
     volumes:
       - .:/app
       - static_volume:/app/static
@@ -16,10 +13,6 @@ services:
     environment:
       - DEBUG=1
       - DJANGO_SETTINGS_MODULE=Learny.settings
-      - POSTGRES_DB=learny_db
-      - POSTGRES_USER=learny_user
-      - POSTGRES_PASSWORD=learny_password
-      - DATABASE_URL=postgresql://learny_user:learny_password@db:5432/learny_db
     depends_on:
       - db
   
