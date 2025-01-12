@@ -47,7 +47,7 @@ class Section(models.Model):
         total = 0
         for course in self.courses.all():
             for lesson in course.lessons.all():
-                total += lesson.duration
+                total += lesson.duration/60
         return total
 
     def get_what_youll_learn_list(self):

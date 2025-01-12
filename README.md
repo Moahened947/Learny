@@ -22,6 +22,8 @@ Learny is a modern, feature-rich online learning platform built with Django. It 
 
 ## Installation
 
+### Option 1: Traditional Setup
+
 1. Clone the repository:
 ```bash
 git clone https://github.com/yourusername/Learny.git
@@ -51,18 +53,64 @@ python manage.py createsuperuser
 
 6. Run the development server:
 ```bash
-# For local development only
 python manage.py runserver
-
-# To expose the server on your local network
-python manage.py runserver 0.0.0.0:8000
 ```
 
-Visit:
-- Local access: http://127.0.0.1:8000/
-- Network access: http://YOUR_IP_ADDRESS:8000/ (e.g., http://192.168.1.103:8000)
+### Option 2: Docker Setup
 
-> **Note**: When exposing the server on your network, ensure your firewall allows incoming connections on port 8000.
+1. Make sure you have Docker and Docker Compose installed on your system.
+
+2. Clone the repository:
+```bash
+git clone https://github.com/yourusername/Learny.git
+cd Learny
+```
+
+3. Build and run the containers:
+```bash
+docker-compose up --build
+```
+
+4. In a new terminal, create a superuser:
+```bash
+docker-compose exec web python manage.py createsuperuser
+```
+
+The application will be available at:
+- Local: http://localhost:8000
+- Network: http://YOUR_IP:8000
+
+### Docker Commands
+
+- Start the application:
+```bash
+docker-compose up
+```
+
+- Stop the application:
+```bash
+docker-compose down
+```
+
+- View logs:
+```bash
+docker-compose logs
+```
+
+- Run migrations:
+```bash
+docker-compose exec web python manage.py migrate
+```
+
+- Create superuser:
+```bash
+docker-compose exec web python manage.py createsuperuser
+```
+
+- Collect static files:
+```bash
+docker-compose exec web python manage.py collectstatic
+```
 
 ## Project Structure
 
