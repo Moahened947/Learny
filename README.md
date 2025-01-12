@@ -51,10 +51,18 @@ python manage.py createsuperuser
 
 6. Run the development server:
 ```bash
+# For local development only
 python manage.py runserver
+
+# To expose the server on your local network
+python manage.py runserver 0.0.0.0:8000
 ```
 
-Visit http://127.0.0.1:8000/ to access the application.
+Visit:
+- Local access: http://127.0.0.1:8000/
+- Network access: http://YOUR_IP_ADDRESS:8000/ (e.g., http://192.168.1.103:8000)
+
+> **Note**: When exposing the server on your network, ensure your firewall allows incoming connections on port 8000.
 
 ## Project Structure
 
