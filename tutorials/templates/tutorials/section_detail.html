@@ -8,92 +8,441 @@
     </ol>
 </nav>
 
-<div class="section-header">
-    <div class="d-flex align-items-center mb-3">
-        <div class="section-icon">
-            <i class="fas fa-book"></i>
-        </div>
-        <div>
-            <h1 class="h2 mb-1">{{ section.title }}</h1>
-            <span class="tutorial-count">
-                <i class="fas fa-play-circle me-1"></i>{{ tutorials.count }} tutorials
-            </span>
-        </div>
-    </div>
-    <p class="lead text-secondary mb-0">{{ section.description }}</p>
-</div>
-
-<div class="row row-cols-1 row-cols-md-2 g-4">
-    {% for tutorial in tutorials %}
-    <div class="col">
-        <div class="card tutorial-card h-100">
-            {% if tutorial.thumbnail %}
-            <img src="{{ tutorial.thumbnail.url }}" class="card-img-top tutorial-thumbnail" alt="{{ tutorial.title }}" style="height: 200px; object-fit: cover;">
-            {% else %}
-            <div class="tutorial-thumbnail-placeholder">
-                <i class="fas fa-play-circle"></i>
-            </div>
-            {% endif %}
-            <div class="card-body">
-                <div class="d-flex align-items-center mb-3">
-                    <div class="section-icon">
-                        <i class="fas fa-play-circle"></i>
-                    </div>
-                    <div>
-                        <h5 class="card-title mb-1">{{ tutorial.title }}</h5>
-                        <small class="text-secondary">
-                            <i class="fas fa-clock me-1"></i>Added {{ tutorial.created_at|date:"M d, Y" }}
-                        </small>
+<div class="section-container">
+    <!-- Section Header -->
+    <div class="section-header">
+        <div class="container">
+            <div class="row align-items-center">
+                <div class="col-lg-8">
+                    <div class="section-info">
+                        <h1>{{ section.title }}</h1>
+                        <p class="lead">{{ section.description }}</p>
+                        <div class="section-meta">
+                            <span class="badge bg-primary">{{ section.level|title }}</span>
+                            <span class="meta-item">
+                                <i class="fas fa-graduation-cap"></i>
+                                {{ total_lessons }} lessons
+                            </span>
+                            <span class="meta-item">
+                                <i class="fas fa-clock"></i>
+                                {% widthratio total_duration 60 1 %} minutes
+                            </span>
+                            <span class="meta-item">
+                                <i class="fas fa-signal"></i>
+                                {{ section.get_level_display }}
+                            </span>
+                        </div>
                     </div>
                 </div>
-                <p class="card-text text-secondary">{{ tutorial.description }}</p>
-                <div class="tutorial-meta">
-                    <a href="{% url 'tutorials:tutorial_detail' tutorial.pk %}" class="btn btn-primary w-100">
-                        <i class="fas fa-play me-2"></i>Start Learning
-                    </a>
+                <div class="col-lg-4">
+                    {% if section.thumbnail %}
+                        <img src="{{ section.thumbnail.url }}" alt="{{ section.title }}" class="section-thumbnail">
+                    {% else %}
+                        <div class="section-thumbnail-placeholder">
+                            <i class="fas fa-laptop-code"></i>
+                        </div>
+                    {% endif %}
                 </div>
             </div>
         </div>
     </div>
-    {% empty %}
-    <div class="col-12">
-        <div class="card tutorial-card">
-            <div class="card-body text-center py-5">
-                <i class="fas fa-video fa-3x text-secondary mb-3"></i>
-                <h3 class="text-secondary">No tutorials available</h3>
-                <p class="text-muted">Check back later for new tutorials in this section!</p>
+
+    <!-- Section Content -->
+    <div class="container section-content">
+        <div class="row">
+            <div class="col-lg-8">
+                <!-- What You'll Learn -->
+                <div class="content-card">
+                    <h3>What You'll Learn</h3>
+                    <div class="row">
+                        {% for item in what_youll_learn %}
+                            <div class="col-md-6">
+                                <div class="learn-item">
+                                    <i class="fas fa-check"></i>
+                                    {{ item }}
+                                </div>
+                            </div>
+                        {% endfor %}
+                    </div>
+                </div>
+
+                <!-- Requirements -->
+                {% if requirements %}
+                <div class="content-card">
+                    <h3>Requirements</h3>
+                    <ul class="requirements-list">
+                        {% for req in requirements %}
+                            <li>
+                                <i class="fas fa-circle"></i>
+                                {{ req }}
+                            </li>
+                        {% endfor %}
+                    </ul>
+                </div>
+                {% endif %}
+
+                <!-- Course Content -->
+                <div class="content-card">
+                    <h3>Course Content</h3>
+                    <div class="course-content-summary">
+                        <span>{{ total_lessons }} lessons</span>
+                        <span>•</span>
+                        <span>{% widthratio total_duration 60 1 %} minutes total</span>
+                    </div>
+                    
+                    <div class="accordion" id="courseContent">
+                        {% for course in courses %}
+                        <div class="accordion-item">
+                            <h2 class="accordion-header" id="heading{{ course.id }}">
+                                <button class="accordion-button {% if not forloop.first %}collapsed{% endif %}" type="button" 
+                                        data-bs-toggle="collapse" data-bs-target="#collapse{{ course.id }}"
+                                        aria-expanded="{% if forloop.first %}true{% else %}false{% endif %}" 
+                                        aria-controls="collapse{{ course.id }}">
+                                    <div class="course-header">
+                                        <div class="course-title">{{ course.title }}</div>
+                                        <div class="course-meta">
+                                            <span>{{ course.lessons.count }} lessons</span>
+                                            <span>•</span>
+                                            <span>{% widthratio course.total_duration 60 1 %} min</span>
+                                        </div>
+                                    </div>
+                                </button>
+                            </h2>
+                            <div id="collapse{{ course.id }}" class="accordion-collapse collapse {% if forloop.first %}show{% endif %}"
+                                 aria-labelledby="heading{{ course.id }}" data-bs-parent="#courseContent">
+                                <div class="accordion-body">
+                                    <div class="lesson-list">
+                                        {% for lesson in course.lessons.all %}
+                                        <div class="lesson-item">
+                                            <div class="lesson-info">
+                                                <i class="fas {% if lesson.is_preview %}fa-play-circle{% else %}fa-lock{% endif %}"></i>
+                                                <span class="lesson-title">{{ lesson.title }}</span>
+                                            </div>
+                                            <div class="lesson-meta">
+                                                {% if lesson.is_preview %}
+                                                    <a href="{% url 'tutorials:lesson_detail' section_slug=section.slug course_slug=course.slug lesson_slug=lesson.slug %}" 
+                                                       class="preview-link">Preview</a>
+                                                {% endif %}
+                                                <span class="lesson-duration">{{ lesson.format_duration }}</span>
+                                            </div>
+                                        </div>
+                                        {% endfor %}
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                        {% endfor %}
+                    </div>
+                </div>
+            </div>
+
+            <!-- Sidebar -->
+            <div class="col-lg-4">
+                <div class="sidebar-card">
+                    <div class="preview-video">
+                        {% if first_preview and first_preview.video_file %}
+                            <video controls class="preview-player">
+                                <source src="{{ first_preview.video_file.url }}" type="video/mp4">
+                                Your browser does not support the video tag.
+                            </video>
+                        {% else %}
+                            <div class="preview-placeholder">
+                                <i class="fas fa-play-circle"></i>
+                                <span>Preview Coming Soon</span>
+                            </div>
+                        {% endif %}
+                    </div>
+                    <div class="price-info">
+                        <div class="price">Free</div>
+                        <a href="{% url 'tutorials:pricing' %}" class="btn btn-primary btn-lg w-100">
+                            <i class="fas fa-crown me-2"></i>Upgrade to Pro
+                        </a>
+                    </div>
+                    <div class="features-list">
+                        <div class="feature-item">
+                            <i class="fas fa-infinity"></i>
+                            Full lifetime access
+                        </div>
+                        <div class="feature-item">
+                            <i class="fas fa-mobile-alt"></i>
+                            Access on mobile and TV
+                        </div>
+                        <div class="feature-item">
+                            <i class="fas fa-certificate"></i>
+                            Certificate of completion
+                        </div>
+                    </div>
+                </div>
             </div>
         </div>
     </div>
-    {% endfor %}
 </div>
 
+{% block extra_css %}
 <style>
-.tutorial-thumbnail-placeholder {
-    height: 200px;
+.section-container {
+    margin-top: -2rem;
+}
+
+.section-header {
     background: linear-gradient(135deg, var(--primary-color), var(--secondary-color));
+    color: white;
+    padding: 4rem 0;
+    margin-bottom: 3rem;
+}
+
+.section-info h1 {
+    font-size: 2.5rem;
+    margin-bottom: 1rem;
+}
+
+.section-meta {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 1.5rem;
+    margin-top: 1.5rem;
+}
+
+.meta-item {
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+    font-size: 0.9rem;
+}
+
+.section-thumbnail {
+    width: 100%;
+    border-radius: 1rem;
+    box-shadow: 0 10px 20px rgba(0, 0, 0, 0.2);
+}
+
+.section-thumbnail-placeholder {
+    aspect-ratio: 16/9;
+    background: rgba(255, 255, 255, 0.1);
+    border-radius: 1rem;
     display: flex;
     align-items: center;
     justify-content: center;
-    color: white;
     font-size: 3rem;
 }
 
-.tutorial-thumbnail-placeholder i {
+.content-card {
+    background: var(--card-background);
+    border-radius: 1rem;
+    padding: 2rem;
+    margin-bottom: 2rem;
+    box-shadow: 0 1px 3px rgba(0, 0, 0, 0.1);
+}
+
+.learn-item {
+    display: flex;
+    gap: 1rem;
+    margin-bottom: 1rem;
+    color: var(--text-primary);
+}
+
+.learn-item i {
+    color: var(--success-color);
+    margin-top: 0.25rem;
+}
+
+.requirements-list {
+    list-style: none;
+    padding: 0;
+    margin: 0;
+}
+
+.requirements-list li {
+    display: flex;
+    gap: 1rem;
+    margin-bottom: 1rem;
+    color: var(--text-primary);
+}
+
+.requirements-list i {
+    font-size: 0.5rem;
+    margin-top: 0.5rem;
+    color: var(--text-secondary);
+}
+
+.course-content-summary {
+    color: var(--text-secondary);
+    margin-bottom: 1.5rem;
+    font-size: 0.9rem;
+}
+
+.course-content-summary span:nth-child(2) {
+    margin: 0 0.5rem;
+}
+
+.accordion-item {
+    border: none;
+    background: none;
+    margin-bottom: 0.5rem;
+}
+
+.accordion-button {
+    background: var(--background-secondary);
+    border-radius: 0.5rem !important;
+    padding: 1rem;
+}
+
+.accordion-button:not(.collapsed) {
+    background: var(--primary-color);
+    color: white;
+}
+
+.course-header {
+    width: 100%;
+}
+
+.course-title {
+    font-weight: 500;
+    margin-bottom: 0.25rem;
+}
+
+.course-meta {
+    font-size: 0.8rem;
     opacity: 0.8;
-    transition: opacity 0.3s ease;
 }
 
-.card:hover .tutorial-thumbnail-placeholder i {
-    opacity: 1;
+.course-meta span:nth-child(2) {
+    margin: 0 0.5rem;
 }
 
-.tutorial-thumbnail {
-    transition: transform 0.3s ease;
+.lesson-list {
+    display: flex;
+    flex-direction: column;
+    gap: 0.5rem;
 }
 
-.card:hover .tutorial-thumbnail {
-    transform: scale(1.05);
+.lesson-item {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 0.75rem;
+    border-radius: 0.5rem;
+    background: var(--background-secondary);
+    transition: background-color 0.3s ease;
+}
+
+.lesson-item:hover {
+    background: var(--accent-color);
+}
+
+.lesson-info {
+    display: flex;
+    align-items: center;
+    gap: 0.75rem;
+}
+
+.lesson-info i {
+    color: var(--primary-color);
+}
+
+.lesson-meta {
+    display: flex;
+    align-items: center;
+    gap: 1rem;
+}
+
+.preview-link {
+    color: var(--primary-color);
+    text-decoration: none;
+    font-weight: 500;
+}
+
+.lesson-duration {
+    color: var(--text-secondary);
+    font-size: 0.875rem;
+}
+
+.sidebar-card {
+    background: var(--card-background);
+    border-radius: 1rem;
+    overflow: hidden;
+    position: sticky;
+    top: 2rem;
+    box-shadow: 0 1px 3px rgba(0, 0, 0, 0.1);
+}
+
+.preview-video {
+    aspect-ratio: 16/9;
+    background: var(--background-secondary);
+}
+
+.preview-player {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+}
+
+.preview-placeholder {
+    width: 100%;
+    height: 100%;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    gap: 1rem;
+    color: var(--text-secondary);
+}
+
+.preview-placeholder i {
+    font-size: 3rem;
+}
+
+.price-info {
+    padding: 1.5rem;
+    border-bottom: 1px solid var(--border-color);
+}
+
+.price {
+    font-size: 2rem;
+    font-weight: 700;
+    margin-bottom: 1rem;
+    color: var(--text-primary);
+}
+
+.features-list {
+    padding: 1.5rem;
+}
+
+.feature-item {
+    display: flex;
+    align-items: center;
+    gap: 1rem;
+    margin-bottom: 1rem;
+    color: var(--text-primary);
+}
+
+.feature-item i {
+    color: var(--primary-color);
+}
+
+@media (max-width: 992px) {
+    .section-header {
+        text-align: center;
+        padding: 3rem 0;
+    }
+
+    .section-meta {
+        justify-content: center;
+    }
+
+    .section-thumbnail,
+    .section-thumbnail-placeholder {
+        margin-top: 2rem;
+        max-width: 400px;
+        margin-left: auto;
+        margin-right: auto;
+    }
+
+    .sidebar-card {
+        position: static;
+        margin-top: 2rem;
+    }
 }
 </style>
+{% endblock %}
 {% endblock %}
