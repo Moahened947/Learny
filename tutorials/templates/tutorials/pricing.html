@@ -24,8 +24,8 @@
                     </div>
                     <h3 class="pricing-title">Basic</h3>
                     <div class="pricing-price">
-                        <span class="currency">$</span>
-                        <span class="amount" data-monthly="19" data-annual="15">19</span>
+                        <span class="currency">LYD</span>
+                        <span class="amount" data-monthly="25" data-annual="20">25</span>
                         <span class="period">/month</span>
                     </div>
                 </div>
@@ -55,8 +55,8 @@
                     </div>
                     <h3 class="pricing-title">Pro</h3>
                     <div class="pricing-price">
-                        <span class="currency">$</span>
-                        <span class="amount" data-monthly="49" data-annual="39">49</span>
+                        <span class="currency">LYD</span>
+                        <span class="amount" data-monthly="65" data-annual="52">65</span>
                         <span class="period">/month</span>
                     </div>
                 </div>
@@ -85,8 +85,8 @@
                     </div>
                     <h3 class="pricing-title">Enterprise</h3>
                     <div class="pricing-price">
-                        <span class="currency">$</span>
-                        <span class="amount" data-monthly="99" data-annual="79">99</span>
+                        <span class="currency">LYD</span>
+                        <span class="amount" data-monthly="130" data-annual="104">130</span>
                         <span class="period">/month</span>
                     </div>
                 </div>
@@ -270,22 +270,29 @@
 }
 
 .pricing-price {
-    font-size: 2.5rem;
-    font-weight: 700;
-    color: var(--text-primary);
-    margin-bottom: 1rem;
+    margin: 1.5rem 0;
 }
 
 .pricing-price .currency {
     font-size: 1.5rem;
-    font-weight: 500;
-    vertical-align: super;
+    font-weight: 600;
+    margin-right: 0.25rem;
+    vertical-align: top;
+    line-height: 1;
+    color: var(--primary-color);
+}
+
+.pricing-price .amount {
+    font-size: 3.5rem;
+    font-weight: 700;
+    line-height: 1;
+    color: var(--primary-color);
 }
 
 .pricing-price .period {
     font-size: 1rem;
     color: var(--text-secondary);
-    font-weight: 400;
+    margin-left: 0.25rem;
 }
 
 .pricing-features {
