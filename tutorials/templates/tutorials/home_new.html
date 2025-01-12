@@ -1,0 +1,227 @@
+{% extends 'tutorials/base.html' %}
+
+{% block content %}
+<!-- Hero Section -->
+<div class="hero-section mb-5">
+    <div class="hero-content text-center">
+        <h1 class="hero-title mb-4">
+            Master New Skills with <span class="gradient-text">Learny</span>
+        </h1>
+        <p class="hero-subtitle mb-5">Unlock your potential with our comprehensive learning platform.<br>Start your journey to success today.</p>
+        <div class="hero-stats d-flex justify-content-center gap-5 mb-5">
+            <div class="stat-item">
+                <div class="stat-value">{{ sections.count }}</div>
+                <div class="stat-label">Learning Paths</div>
+            </div>
+            <div class="stat-item">
+                {% with total_tutorials=0 %}
+                    {% for section in sections %}
+                        {% with total_tutorials=total_tutorials|add:section.tutorials.count %}{% endwith %}
+                    {% endfor %}
+                    <div class="stat-value">{{ total_tutorials }}</div>
+                {% endwith %}
+                <div class="stat-label">Video Tutorials</div>
+            </div>
+            <div class="stat-item">
+                <div class="stat-value">24/7</div>
+                <div class="stat-label">Support</div>
+            </div>
+        </div>
+        <div class="hero-cta">
+            <a href="#courses" class="btn btn-primary btn-lg me-3">
+                <i class="fas fa-play-circle me-2"></i>Start Learning
+            </a>
+            <a href="#" class="btn btn-outline-primary btn-lg">
+                <i class="fas fa-info-circle me-2"></i>Learn More
+            </a>
+        </div>
+    </div>
+</div>
+
+<!-- Featured Sections -->
+<div id="courses">
+    <div class="section-header text-center mb-5">
+        <h2 class="section-title">Featured Learning Paths</h2>
+        <p class="section-subtitle">Choose from our carefully curated selection of courses</p>
+    </div>
+    
+    <div class="row row-cols-1 row-cols-md-2 row-cols-lg-3 g-4">
+        {% for section in sections %}
+        <div class="col">
+            <div class="card section-card h-100">
+                <div class="card-body">
+                    <div class="d-flex align-items-center mb-3">
+                        <div class="section-icon">
+                            <i class="fas fa-book"></i>
+                        </div>
+                        <div>
+                            <h5 class="card-title mb-1">{{ section.title }}</h5>
+                            <span class="tutorial-count">
+                                <i class="fas fa-play-circle me-1"></i>{{ section.tutorials.count }} tutorials
+                            </span>
+                        </div>
+                    </div>
+                    <p class="card-text text-secondary mb-4">{{ section.description }}</p>
+                    <div class="progress-indicator">
+                        <div class="progress-bar" style="width: 100%;"></div>
+                    </div>
+                    <div class="d-flex justify-content-end mt-3">
+                        <a href="{% url 'tutorials:section_detail' section.pk %}" class="btn btn-primary">
+                            <i class="fas fa-arrow-right me-2"></i>Explore Section
+                        </a>
+                    </div>
+                </div>
+            </div>
+        </div>
+        {% empty %}
+        <div class="col-12">
+            <div class="card section-card">
+                <div class="card-body text-center py-5">
+                    <i class="fas fa-books fa-3x text-secondary mb-3"></i>
+                    <h3 class="text-secondary">No sections available yet</h3>
+                    <p class="text-muted">Check back later for new content!</p>
+                </div>
+            </div>
+        </div>
+        {% endfor %}
+    </div>
+</div>
+{% endblock %}
+
+{% block extra_css %}
+<style>
+.hero-section {
+    padding: 4rem 0;
+    background: linear-gradient(135deg, rgba(var(--primary-color-rgb), 0.05) 0%, rgba(var(--primary-color-rgb), 0.1) 100%);
+    border-radius: 2rem;
+    margin: -3rem -1rem 3rem -1rem;
+}
+
+.hero-content {
+    max-width: 800px;
+    margin: 0 auto;
+    padding: 0 1rem;
+}
+
+.hero-title {
+    font-size: 3.5rem;
+    font-weight: 800;
+    line-height: 1.2;
+    margin-bottom: 1.5rem;
+}
+
+.gradient-text {
+    background: linear-gradient(45deg, var(--primary-color), var(--secondary-color));
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+    background-clip: text;
+}
+
+.hero-subtitle {
+    font-size: 1.25rem;
+    color: var(--text-secondary);
+    font-weight: 400;
+    line-height: 1.6;
+}
+
+.hero-stats {
+    background: rgba(255, 255, 255, 0.9);
+    backdrop-filter: blur(10px);
+    border-radius: 1rem;
+    padding: 2rem;
+    display: inline-flex;
+    box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1), 0 2px 4px -1px rgba(0, 0, 0, 0.06);
+}
+
+.stat-item {
+    text-align: center;
+    padding: 0 2rem;
+    position: relative;
+}
+
+.stat-item:not(:last-child)::after {
+    content: '';
+    position: absolute;
+    right: 0;
+    top: 50%;
+    transform: translateY(-50%);
+    height: 40px;
+    width: 1px;
+    background: var(--accent-color);
+}
+
+.stat-value {
+    font-size: 2.5rem;
+    font-weight: 700;
+    color: var(--primary-color);
+    line-height: 1;
+    margin-bottom: 0.5rem;
+}
+
+.stat-label {
+    font-size: 0.875rem;
+    color: var(--text-secondary);
+    font-weight: 500;
+}
+
+.hero-cta {
+    margin-top: 2rem;
+}
+
+.hero-cta .btn {
+    padding: 0.75rem 2rem;
+    font-weight: 600;
+    border-radius: 0.75rem;
+}
+
+.section-header {
+    margin-bottom: 3rem;
+}
+
+.section-title {
+    font-size: 2rem;
+    font-weight: 700;
+    color: var(--text-primary);
+    margin-bottom: 1rem;
+}
+
+.section-subtitle {
+    font-size: 1.1rem;
+    color: var(--text-secondary);
+}
+
+@media (max-width: 768px) {
+    .hero-section {
+        padding: 3rem 0;
+        margin: -2rem -1rem 2rem -1rem;
+    }
+
+    .hero-title {
+        font-size: 2.5rem;
+    }
+
+    .hero-subtitle {
+        font-size: 1.1rem;
+    }
+
+    .hero-stats {
+        flex-direction: column;
+        gap: 2rem;
+        padding: 1.5rem;
+    }
+
+    .stat-item:not(:last-child)::after {
+        display: none;
+    }
+
+    .stat-item {
+        padding: 0;
+    }
+
+    .hero-cta .btn {
+        width: 100%;
+        margin: 0.5rem 0;
+    }
+}
+</style>
+{% endblock %}

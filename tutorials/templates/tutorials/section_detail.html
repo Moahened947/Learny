@@ -1,0 +1,99 @@
+{% extends 'tutorials/base.html' %}
+
+{% block content %}
+<nav aria-label="breadcrumb">
+    <ol class="breadcrumb">
+        <li class="breadcrumb-item"><a href="{% url 'tutorials:home' %}">Home</a></li>
+        <li class="breadcrumb-item active">{{ section.title }}</li>
+    </ol>
+</nav>
+
+<div class="section-header">
+    <div class="d-flex align-items-center mb-3">
+        <div class="section-icon">
+            <i class="fas fa-book"></i>
+        </div>
+        <div>
+            <h1 class="h2 mb-1">{{ section.title }}</h1>
+            <span class="tutorial-count">
+                <i class="fas fa-play-circle me-1"></i>{{ tutorials.count }} tutorials
+            </span>
+        </div>
+    </div>
+    <p class="lead text-secondary mb-0">{{ section.description }}</p>
+</div>
+
+<div class="row row-cols-1 row-cols-md-2 g-4">
+    {% for tutorial in tutorials %}
+    <div class="col">
+        <div class="card tutorial-card h-100">
+            {% if tutorial.thumbnail %}
+            <img src="{{ tutorial.thumbnail.url }}" class="card-img-top tutorial-thumbnail" alt="{{ tutorial.title }}" style="height: 200px; object-fit: cover;">
+            {% else %}
+            <div class="tutorial-thumbnail-placeholder">
+                <i class="fas fa-play-circle"></i>
+            </div>
+            {% endif %}
+            <div class="card-body">
+                <div class="d-flex align-items-center mb-3">
+                    <div class="section-icon">
+                        <i class="fas fa-play-circle"></i>
+                    </div>
+                    <div>
+                        <h5 class="card-title mb-1">{{ tutorial.title }}</h5>
+                        <small class="text-secondary">
+                            <i class="fas fa-clock me-1"></i>Added {{ tutorial.created_at|date:"M d, Y" }}
+                        </small>
+                    </div>
+                </div>
+                <p class="card-text text-secondary">{{ tutorial.description }}</p>
+                <div class="tutorial-meta">
+                    <a href="{% url 'tutorials:tutorial_detail' tutorial.pk %}" class="btn btn-primary w-100">
+                        <i class="fas fa-play me-2"></i>Start Learning
+                    </a>
+                </div>
+            </div>
+        </div>
+    </div>
+    {% empty %}
+    <div class="col-12">
+        <div class="card tutorial-card">
+            <div class="card-body text-center py-5">
+                <i class="fas fa-video fa-3x text-secondary mb-3"></i>
+                <h3 class="text-secondary">No tutorials available</h3>
+                <p class="text-muted">Check back later for new tutorials in this section!</p>
+            </div>
+        </div>
+    </div>
+    {% endfor %}
+</div>
+
+<style>
+.tutorial-thumbnail-placeholder {
+    height: 200px;
+    background: linear-gradient(135deg, var(--primary-color), var(--secondary-color));
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    color: white;
+    font-size: 3rem;
+}
+
+.tutorial-thumbnail-placeholder i {
+    opacity: 0.8;
+    transition: opacity 0.3s ease;
+}
+
+.card:hover .tutorial-thumbnail-placeholder i {
+    opacity: 1;
+}
+
+.tutorial-thumbnail {
+    transition: transform 0.3s ease;
+}
+
+.card:hover .tutorial-thumbnail {
+    transform: scale(1.05);
+}
+</style>
+{% endblock %}
